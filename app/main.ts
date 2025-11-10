@@ -5,10 +5,15 @@ const rl = createInterface({
   output: process.stdout,
 });
 
-// TODO: Uncomment the code below to pass the first stage
-while(true){
+function stepRun() {
   rl.question("$ ", (answer) => {
-    console.log(`${answer}: command not found`);
-    rl.close();
+    console.log(`${answer}: command not found`)
+    stepRun()
   });
 }
+
+function main() {
+  stepRun()
+}
+
+main()
