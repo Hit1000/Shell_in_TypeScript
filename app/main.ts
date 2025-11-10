@@ -5,18 +5,30 @@ const rl = createInterface({
   output: process.stdout,
 });
 
+function exit(command: string): void {
+  if (command.trim() === "exit 0") {
+    process.exit(0);
+  }
+}
+
+function echo(command: string): void {
+  if(command.substring(0, 4) == "echo"){
+    console.log(command.substring(5));
+  }
+}
+
 function stepRun() {
-  rl.question("$ ", (answer) => {
-    if(answer.trim() === "exit 0"){
-      process.exit(0);
-    } 
-    console.log(`${answer}: command not found`)
-    stepRun()
+  rl.question("$ ", (command) => {
+    exit(command);
+    echo(command);
+
+    console.log(`${command}: command not found`);
+    stepRun();
   });
 }
 
 function main() {
-  stepRun()
+  stepRun();
 }
 
-main()
+main();
