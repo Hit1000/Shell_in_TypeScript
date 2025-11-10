@@ -7,7 +7,9 @@ const rl = createInterface({
 
 function stepRun() {
   rl.question("$ ", (answer) => {
-    if(answer === "exit 0")
+    if(answer === "exit 0"){
+      return 0;
+    } 
     console.log(`${answer}: command not found`)
     stepRun()
   });
