@@ -6,23 +6,28 @@ const rl = createInterface({
 });
 
 function exit(command: string): void {
-  if (command.trim() === "exit 0") {
-    process.exit(0);
-  }
+  process.exit(parseInt(command, 10));
 }
 
 function echo(command: string): void {
-  if(command.substring(0, 4) == "echo"){
-    console.log(command.substring(5));
-  }
+  console.log(command.substring(5));
 }
 
 function stepRun() {
   rl.question("$ ", (command) => {
-    exit(command);
-    echo(command);
-
-    console.log(`${command}: command not found`);
+    const trimmed = command.trim();
+    if(trimmed){
+      const parts = trimmed.split(/\s+/);
+      if(parts[0] === "exit"){
+        exit(parts[1]);
+      }
+      else if(parts[0] === "echo"){  
+        echo(trimmed);
+      }
+      else{
+        console.log(`${parts[0]}: command not found`);
+      } 
+    }
     stepRun();
   });
 }
