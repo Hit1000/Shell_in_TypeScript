@@ -1,5 +1,6 @@
 import { createInterface } from "readline";
 import { existsSync, accessSync, constants } from "fs";
+import exec from "child_process";
 
 const rl = createInterface({
   input: process.stdin,
@@ -20,20 +21,26 @@ function echo(command: string): void {
   console.log(command.substring(5));
 }
 
+function findExecutableInPath(filename: string): string | null {
+  for (const path of paths) {
+    const fullPath = `${path}/${filename}`;
+    if (existsSync(fullPath)) {
+      try {
+        accessSync(fullPath, constants.X_OK);
+        return fullPath;
+      } catch {}
+    }
+  }
+  return null;
+}
+
 function type(filename: string): void {
+  let fullPath: string | null = null;
   if (types.includes(filename.toLowerCase())) {
     rl.write(`${filename} is a shell builtin\n`);
+  } else if ((fullPath = findExecutableInPath(filename))) {
+    rl.write(`${filename} is ${fullPath}\n`);
   } else {
-    for (const path of paths) {
-      const fullPath = `${path}/${filename}`;
-      if (existsSync(fullPath)) {
-        try {
-          accessSync(fullPath, constants.X_OK);
-          rl.write(`${filename} is ${fullPath}\n`);
-          return;
-        } catch {}
-      }
-    }
     rl.write(`${filename}: not found\n`);
   }
 }
@@ -41,6 +48,7 @@ function type(filename: string): void {
 function stepRun() {
   rl.question("$ ", (command) => {
     const trimmed = command.trim();
+    let execPath: string | null = null;
     if (trimmed) {
       const parts = trimmed.split(/\s+/);
       if (equalsIgnoreCase(parts[0], "exit")) {
@@ -49,6 +57,8 @@ function stepRun() {
         echo(trimmed);
       } else if (equalsIgnoreCase(parts[0], "type")) {
         type(parts[1]);
+      } else if( execPath = findExecutableInPath(parts[0])) {
+        exec.execSync(command, { stdio: "inherit" });
       } else {
         console.log(`${parts[0]}: command not found`);
       }
