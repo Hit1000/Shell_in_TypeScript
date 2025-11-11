@@ -27,11 +27,11 @@ function type(filename: string): void {
     for (const path of paths) {
       const fullPath = `${path}/${filename}`;
       if (existsSync(fullPath)) {
-        rl.write(`${filename} is ${fullPath}\n`);
-        // try {
-        //   accessSync(fullPath, constants.X_OK);
-        //   return;
-        // } catch {}
+        try {
+          accessSync(fullPath, constants.X_OK);
+          rl.write(`${filename} is ${fullPath}\n`);
+          return;
+        } catch {}
       }
     }
     rl.write(`${filename}: not found\n`);
