@@ -24,6 +24,7 @@ function type(filename: string): void {
   if (types.includes(filename.toLowerCase())) {
     rl.write(`${filename} is a shell builtin\n`);
   } else {
+    for(const path of paths) {console.log(path)}
     for (const path of paths) {
       const fullPath = `${path}/${filename}`;
       if (existsSync(fullPath)) {
