@@ -24,15 +24,14 @@ function type(filename: string): void {
   if (types.includes(filename.toLowerCase())) {
     rl.write(`${filename} is a shell builtin\n`);
   } else {
-    for(const path of paths) {console.log(path)}
     for (const path of paths) {
       const fullPath = `${path}/${filename}`;
       if (existsSync(fullPath)) {
-        try {
-          accessSync(fullPath, constants.X_OK);
-          rl.write(`${filename} is ${fullPath}\n`);
-          return;
-        } catch {}
+        rl.write(`${filename} is ${fullPath}\n`);
+        // try {
+        //   accessSync(fullPath, constants.X_OK);
+        //   return;
+        // } catch {}
       }
     }
     rl.write(`${filename}: not found\n`);
