@@ -1,9 +1,12 @@
 import { createInterface } from "readline";
+import { existsSync, accessSync, constants } from "fs";
 
 const rl = createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+const paths = process.env["PATH"]?.split(":") || [];
+const types = ["echo", "exit", "type"];
 
 function equalsIgnoreCase(str1: string, str2: string): boolean {
   return str1.toLowerCase() === str2.toLowerCase();
@@ -18,14 +21,20 @@ function echo(command: string): void {
 }
 
 function type(filename: string): void {
-  if (equalsIgnoreCase(filename, "echo")) {
-    console.log("echo is a shell builtin");
-  } else if (equalsIgnoreCase(filename, "exit")) {
-    console.log("exit is a shell builtin");
-  } else if (equalsIgnoreCase(filename, "type")) {
-    console.log("type is a shell builtin");
+  if (types.includes(filename.toLowerCase())) {
+    rl.write(`${filename} is a shell builtin\n`);
   } else {
-    console.log(`${filename}: not found`);
+    for (const path of paths) {
+      const fullPath = `${path}/${filename}`;
+      if (existsSync(fullPath)) {
+        try {
+          accessSync(fullPath, constants.X_OK);
+          rl.write(`${filename} is ${fullPath}\n`);
+          return;
+        } catch {}
+      }
+      rl.write(`${filename}: not found\n`);
+    }
   }
 }
 
