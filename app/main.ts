@@ -7,7 +7,7 @@ const rl = createInterface({
   output: process.stdout,
 });
 const paths = process.env["PATH"]?.split(":") || [];
-const types = ["echo", "exit", "type"];
+const types = ["echo", "exit", "type", "pwd"];
 
 function equalsIgnoreCase(str1: string, str2: string): boolean {
   return str1.toLowerCase() === str2.toLowerCase();
@@ -57,7 +57,9 @@ function stepRun() {
         echo(trimmed);
       } else if (equalsIgnoreCase(parts[0], "type")) {
         type(parts[1]);
-      } else if( execPath = findExecutableInPath(parts[0])) {
+      } else if (equalsIgnoreCase(parts[0], "pwd")) {
+        console.log(process.cwd());
+      } else if ((execPath = findExecutableInPath(parts[0]))) {
         exec.execSync(command, { stdio: "inherit" });
       } else {
         console.log(`${parts[0]}: command not found`);
