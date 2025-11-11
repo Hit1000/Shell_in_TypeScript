@@ -33,8 +33,8 @@ function type(filename: string): void {
           return;
         } catch {}
       }
-      rl.write(`${filename}: not found\n`);
     }
+    rl.write(`${filename}: not found\n`);
   }
 }
 
