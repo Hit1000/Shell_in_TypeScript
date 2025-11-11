@@ -58,7 +58,7 @@ function stepRun() {
       } else if (equalsIgnoreCase(parts[0], "type")) {
         type(parts[1]);
       } else if( execPath = findExecutableInPath(parts[0])) {
-        exec.execSync(command, { stdio: "inherit" });
+        exec.execSync(execPath, { stdio: "inherit" });
       } else {
         console.log(`${parts[0]}: command not found`);
       }
