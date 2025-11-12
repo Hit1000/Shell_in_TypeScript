@@ -21,20 +21,31 @@ function echo(command: string): void {
   let words: string = "";
   let inQuotes: boolean = false;
   for (let i = 5; i < command.length; i++) {
-    if (command[i] === "'") {
-      result += words;
-      words = "";
+    const ch = command[i];
+
+    if (ch === "'") {
       inQuotes = !inQuotes;
-    }
-    else if ((command[i] === " " && !inQuotes && words.length > 0) || (i === command.length - 1)) {
-      result += words + " ";
-      words = "";
-    }
-    else {
-      words += command[i];
+      if (!inQuotes) {
+        result += words;
+        words = "";
+      }
+    } else if (ch === " " && !inQuotes) {
+      if (words.length > 0) {
+        if (result.length > 0) result += " ";
+        result += words;
+        words = "";
+      }
+    } else {
+      words += ch;
     }
   }
-  console.log(result.trim());
+  
+  if (words.length > 0) {
+    if (result.length > 0) result += " ";
+    result += words;
+  }
+
+  console.log(result);
 }
 
 function type(filename: string): void {
