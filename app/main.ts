@@ -16,8 +16,8 @@ function exit(command: string): void {
   process.exit(parseInt(command, 10));
 }
 
-function echo(command: string[]): void {
-  console.log(command.join(" ").replace(/'/g, ""));
+function echo(command: string): void {
+  console.log(command.substring(5).split(/'/g).join(""));
 }
 
 function type(filename: string): void {
@@ -40,7 +40,7 @@ function stepRun() {
       if (equalsIgnoreCase(part, "exit")) {
         exit(part2[0]);
       } else if (equalsIgnoreCase(part, "echo")) {
-        echo(part2);
+        echo(trimmed);
       } else if (equalsIgnoreCase(part, "type")) {
         type(part2[0]);
       } else if (equalsIgnoreCase(part, "pwd")) {
