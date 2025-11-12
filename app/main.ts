@@ -48,11 +48,7 @@ function stepRun() {
       } else if ((execPath = findExecutableInPath(parts[0]))) {
         exec.execSync(command, { stdio: "inherit" });
       } else if (equalsIgnoreCase(parts[0], "cd")) {
-        if (checkRouteExists(parts[1])) {
-          process.chdir(parts[1]);
-        } else {
-          console.log(`cd: ${parts[1]}: No such file or directory`);
-        }
+        checkRouteExists(parts[1])
       } else {
         console.log(`${parts[0]}: command not found`);
       }

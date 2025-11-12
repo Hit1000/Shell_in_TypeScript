@@ -19,7 +19,10 @@ export function findExecutableInPath(filename: string): string | null {
   return null;
 }
 
-export function checkRouteExists(route: string): string | null {
-  if (existsSync(route)) return route;
-  return null;
+export function checkRouteExists(route: string): void {
+  if (existsSync(route)) {
+    process.chdir(route);
+    return ;
+  }
+  console.log(`cd: ${route}: No such file or directory`);
 }
