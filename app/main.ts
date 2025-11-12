@@ -1,17 +1,16 @@
 import { createInterface } from "readline";
-import { existsSync, accessSync, constants } from "fs";
+import {
+  equalsIgnoreCase,
+  findExecutableInPath,
+  checkRouteExists,
+} from "./utils.js";
 import exec from "child_process";
 
 const rl = createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const paths = process.env["PATH"]?.split(":") || [];
-const types = ["echo", "exit", "type", "pwd"];
-
-function equalsIgnoreCase(str1: string, str2: string): boolean {
-  return str1.toLowerCase() === str2.toLowerCase();
-}
+const types = ["echo", "exit", "type", "pwd", "cd"];
 
 function exit(command: string): void {
   process.exit(parseInt(command, 10));
@@ -19,19 +18,6 @@ function exit(command: string): void {
 
 function echo(command: string): void {
   console.log(command.substring(5));
-}
-
-function findExecutableInPath(filename: string): string | null {
-  for (const path of paths) {
-    const fullPath = `${path}/${filename}`;
-    if (existsSync(fullPath)) {
-      try {
-        accessSync(fullPath, constants.X_OK);
-        return fullPath;
-      } catch {}
-    }
-  }
-  return null;
 }
 
 function type(filename: string): void {
@@ -61,6 +47,12 @@ function stepRun() {
         console.log(process.cwd());
       } else if ((execPath = findExecutableInPath(parts[0]))) {
         exec.execSync(command, { stdio: "inherit" });
+      } else if (equalsIgnoreCase(parts[0], "cd")) {
+        if (checkRouteExists(parts[1])) {
+          process.chdir(parts[1]);
+        } else {
+          console.log(`cd: ${parts[1]}: No such file or directory`);
+        }
       } else {
         console.log(`${parts[0]}: command not found`);
       }
