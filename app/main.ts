@@ -17,26 +17,24 @@ function exit(command: string): void {
 }
 
 function echo(command: string): void {
-  const input = command.slice(5).trim();
-
-  // Split by single quotes, alternating between quoted and unquoted sections
-  const parts = input.split(/'/);
-
-  let result = "";
-  let inQuotes = false;
-
-  for (const part of parts) {
-    if (inQuotes) {
-      // Inside quotes → preserve exactly as-is
-      result += part+" ";
-    } else {
-      // Outside quotes → collapse multiple spaces
-      result += part.trim().replace(/\s+/g, " ");
+  let result: string = "";
+  let words: string = "";
+  let inQuotes: boolean = false;
+  for (let i = 5; i < command.length; i++) {
+    if (command[i] === "'") {
+      result += words;
+      words = "";
+      inQuotes = !inQuotes;
     }
-    inQuotes = !inQuotes; // flip quote state each time
+    else if (command[i] === " " && !inQuotes && words.length > 0) {
+      result += words + " ";
+      words = "";
+    }
+    else {
+      words += command[i];
+    }
   }
-
-  console.log(result.trim());
+  console.log(result);
 }
 
 function type(filename: string): void {
