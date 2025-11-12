@@ -22,7 +22,9 @@ export function findExecutableInPath(filename: string): string | null {
 export function checkRouteExists(route: string): void {
   if (existsSync(route)) {
     process.chdir(route);
-    return ;
+  } else if (route === "~") {process.chdir(process.env.HOME || "");
+    process.chdir(process.env.HOME || "");
+  } else {
+    console.log(`cd: ${route}: No such file or directory`);
   }
-  console.log(`cd: ${route}: No such file or directory`);
 }
