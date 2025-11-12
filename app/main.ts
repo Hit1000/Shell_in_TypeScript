@@ -26,7 +26,7 @@ function echo(command: string): void {
       words = "";
       inQuotes = !inQuotes;
     }
-    else if (command[i] === " " && !inQuotes && words.length > 0) {
+    else if ((command[i] === " " && !inQuotes && words.length > 0) || (i === command.length - 1)) {
       result += words + " ";
       words = "";
     }
@@ -34,7 +34,7 @@ function echo(command: string): void {
       words += command[i];
     }
   }
-  console.log(result);
+  console.log(result.trim());
 }
 
 function type(filename: string): void {
