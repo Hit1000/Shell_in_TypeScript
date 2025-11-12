@@ -16,8 +16,8 @@ function exit(command: string): void {
   process.exit(parseInt(command, 10));
 }
 
-function echo(command: string): void {
-  console.log(command.substring(5).replace(/'/g, ""));
+function echo(command: string[]): void {
+  console.log(command.join(" ").replace(/'/g, ""));
 }
 
 function type(filename: string): void {
@@ -36,21 +36,21 @@ function stepRun() {
     const trimmed = command.trim();
     let execPath: string | null = null;
     if (trimmed) {
-      const parts = trimmed.split(/\s+/);
-      if (equalsIgnoreCase(parts[0], "exit")) {
-        exit(parts[1]);
-      } else if (equalsIgnoreCase(parts[0], "echo")) {
-        echo(trimmed);
-      } else if (equalsIgnoreCase(parts[0], "type")) {
-        type(parts[1]);
-      } else if (equalsIgnoreCase(parts[0], "pwd")) {
+      const [part, ...part2] = trimmed.split(/\s+/);
+      if (equalsIgnoreCase(part, "exit")) {
+        exit(part2[0]);
+      } else if (equalsIgnoreCase(part, "echo")) {
+        echo(part2);
+      } else if (equalsIgnoreCase(part, "type")) {
+        type(part2[0]);
+      } else if (equalsIgnoreCase(part, "pwd")) {
         console.log(process.cwd());
-      } else if ((execPath = findExecutableInPath(parts[0]))) {
+      } else if ((execPath = findExecutableInPath(part))) {
         exec.execSync(command, { stdio: "inherit" });
-      } else if (equalsIgnoreCase(parts[0], "cd")) {
-        checkRouteExists(parts[1])
+      } else if (equalsIgnoreCase(part, "cd")) {
+        checkRouteExists(part2[0]);
       } else {
-        console.log(`${parts[0]}: command not found`);
+        console.log(`${part}: command not found`);
       }
     }
     stepRun();
