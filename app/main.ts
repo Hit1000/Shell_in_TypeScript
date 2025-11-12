@@ -17,7 +17,7 @@ function exit(command: string): void {
 }
 
 function echo(command: string): void {
-  console.log(command.substring(5).replace("'", ""));
+  console.log(command.substring(5).replace(/'/g, ""));
 }
 
 function type(filename: string): void {
