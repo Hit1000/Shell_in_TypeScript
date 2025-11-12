@@ -17,7 +17,26 @@ function exit(command: string): void {
 }
 
 function echo(command: string): void {
-  console.log(command.substring(5).split(/'/g).join(""));
+  const input = command.slice(5).trim();
+
+  // Split by single quotes, alternating between quoted and unquoted sections
+  const parts = input.split(/'/);
+
+  let result = "";
+  let inQuotes = false;
+
+  for (const part of parts) {
+    if (inQuotes) {
+      // Inside quotes → preserve exactly as-is
+      result += part;
+    } else {
+      // Outside quotes → collapse multiple spaces
+      result += part.trim().replace(/\s+/g, " ");
+    }
+    inQuotes = !inQuotes; // flip quote state each time
+  }
+
+  console.log(result.trim());
 }
 
 function type(filename: string): void {
