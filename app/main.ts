@@ -28,7 +28,7 @@ function echo(command: string): void {
   for (const part of parts) {
     if (inQuotes) {
       // Inside quotes → preserve exactly as-is
-      result += part;
+      result += part+" ";
     } else {
       // Outside quotes → collapse multiple spaces
       result += part.trim().replace(/\s+/g, " ");
