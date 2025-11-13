@@ -32,16 +32,17 @@ export function checkRouteExists(route: string): void {
 export function parseCommand(command: string): string[] {
   const args = [];
   let current = "";
-  let inQuote = null;
+  let inSingleQuote = false;
 
   for (let i = 0; i < command.length; i++) {
     const char = command[i];
 
-    if ((char === "'" || char === '"') && inQuote === null) {
-      inQuote = char;
-    } else if (char === inQuote) {
-      inQuote = null;
-    } else if (/\s/.test(char) && inQuote === null) {
+    if (char === "'" && !inSingleQuote) {
+      inSingleQuote = true; // start single-quoted literal
+    } else if (char === "'" && inSingleQuote) {
+      inSingleQuote = false; // end single-quoted literal
+    } else if (/\s/.test(char) && !inSingleQuote) {
+      // split on spaces only if we're not inside quotes
       if (current !== "") {
         args.push(current);
         current = "";
