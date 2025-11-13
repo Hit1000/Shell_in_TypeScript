@@ -5,7 +5,7 @@ import {
   checkRouteExists,
   parseCommand,
 } from "./utils.js";
-import {exec, execFileSync } from "child_process";
+import {exec, execFileSync, execSync  } from "child_process";
 
 const rl = createInterface({
   input: process.stdin,
@@ -58,7 +58,7 @@ function stepRun() {
       } else if (equalsIgnoreCase(command, "pwd")) {
         console.log(process.cwd());
       } else if ((execPath = findExecutableInPath(command))) {
-        exec.execSync(command, { stdio: "inherit" });
+        execSync(`${command} ${args.join(" ")}`, { stdio: "inherit" });
       } else if (equalsIgnoreCase(command, "cd")) {
         checkRouteExists(args[0]);
       } else if (equalsIgnoreCase(command, "cat")) {
