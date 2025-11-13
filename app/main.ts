@@ -5,6 +5,7 @@ import {
   checkRouteExists,
 } from "./utils.js";
 import exec from "child_process";
+import { parse } from "shell-quote";
 
 const rl = createInterface({
   input: process.stdin,
@@ -16,36 +17,8 @@ function exit(command: string): void {
   process.exit(parseInt(command, 10));
 }
 
-function echo(command: string): void {
-  let result: string = "";
-  let words: string = "";
-  let inQuotes: boolean = false;
-  for (let i = 5; i < command.length; i++) {
-    const ch = command[i];
-
-    if (ch === "'") {
-      inQuotes = !inQuotes;
-      if (!inQuotes) {
-        result += words;
-        words = "";
-      }
-    } else if (ch === " " && !inQuotes) {
-      if (words.length > 0) {
-        if (result.length > 0) result += " ";
-        result += words;
-        words = "";
-      }
-    } else {
-      words += ch;
-    }
-  }
-  
-  if (words.length > 0) {
-    if (result.length > 0) result += " ";
-    result += words;
-  }
-
-  console.log(result);
+function echo(command: string[]): void {
+  process.stdout.write(`${command.join(" ")}\n`);
 }
 
 function type(filename: string): void {
@@ -62,23 +35,25 @@ function type(filename: string): void {
 function stepRun() {
   rl.question("$ ", (command) => {
     const trimmed = command.trim();
+    const tokens = parse(command).filter((t:any) => typeof t === "string") as string[];
     let execPath: string | null = null;
     if (trimmed) {
-      const [part, ...part2] = trimmed.split(/\s+/);
-      if (equalsIgnoreCase(part, "exit")) {
-        exit(part2[0]);
-      } else if (equalsIgnoreCase(part, "echo")) {
-        echo(trimmed);
-      } else if (equalsIgnoreCase(part, "type")) {
-        type(part2[0]);
-      } else if (equalsIgnoreCase(part, "pwd")) {
+      // const [part, ...part2] = trimmed.split(/\s+/);
+      const [command, ...args] = tokens;
+      if (equalsIgnoreCase(command, "exit")) {
+        exit(args[0]);
+      } else if (equalsIgnoreCase(command , "echo")) {
+        echo(args);
+      } else if (equalsIgnoreCase(command, "type")) {
+        type(args[0]);
+      } else if (equalsIgnoreCase(command, "pwd")) {
         console.log(process.cwd());
-      } else if ((execPath = findExecutableInPath(part))) {
+      } else if ((execPath = findExecutableInPath(command))) {
         exec.execSync(command, { stdio: "inherit" });
-      } else if (equalsIgnoreCase(part, "cd")) {
-        checkRouteExists(part2[0]);
+      } else if (equalsIgnoreCase(command, "cd")) {
+        checkRouteExists(args[0]);
       } else {
-        console.log(`${part}: command not found`);
+        console.log(`${command}: command not found`);
       }
     }
     stepRun();
