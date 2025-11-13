@@ -5,7 +5,6 @@ import {
   checkRouteExists,
 } from "./utils.js";
 import exec from "child_process";
-import { parse } from "shell-quote";
 
 const rl = createInterface({
   input: process.stdin,
@@ -32,10 +31,36 @@ function type(filename: string): void {
   }
 }
 
+function parseCommand(command: string): string[] {
+  const args = [];
+  let current = "";
+  let inQuote = null;
+
+  for (let i = 0; i < command.length; i++) {
+    const char = command[i];
+
+    if ((char === "'" || char === '"') && inQuote === null) {
+      inQuote = char;
+    } else if (char === inQuote) {
+      inQuote = null;
+    } else if (/\s/.test(char) && inQuote === null) {
+      if (current !== "") {
+        args.push(current);
+        current = "";
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current !== "") args.push(current);
+  return args;
+}
+
 function stepRun() {
   rl.question("$ ", (command) => {
     const trimmed = command.trim();
-    const tokens = parse(command).filter((t:any) => typeof t === "string") as string[];
+    const tokens = parseCommand(command);
     let execPath: string | null = null;
     if (trimmed) {
       // const [part, ...part2] = trimmed.split(/\s+/);
