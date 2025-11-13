@@ -28,3 +28,29 @@ export function checkRouteExists(route: string): void {
     console.log(`cd: ${route}: No such file or directory`);
   }
 }
+
+export function parseCommand(command: string): string[] {
+  const args = [];
+  let current = "";
+  let inQuote = null;
+
+  for (let i = 0; i < command.length; i++) {
+    const char = command[i];
+
+    if ((char === "'" || char === '"') && inQuote === null) {
+      inQuote = char;
+    } else if (char === inQuote) {
+      inQuote = null;
+    } else if (/\s/.test(char) && inQuote === null) {
+      if (current !== "") {
+        args.push(current);
+        current = "";
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current !== "") args.push(current);
+  return args;
+}

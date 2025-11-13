@@ -3,6 +3,7 @@ import {
   equalsIgnoreCase,
   findExecutableInPath,
   checkRouteExists,
+  parseCommand,
 } from "./utils.js";
 import exec from "child_process";
 
@@ -31,30 +32,14 @@ function type(filename: string): void {
   }
 }
 
-function parseCommand(command: string): string[] {
-  const args = [];
-  let current = "";
-  let inQuote = null;
-
-  for (let i = 0; i < command.length; i++) {
-    const char = command[i];
-
-    if ((char === "'" || char === '"') && inQuote === null) {
-      inQuote = char;
-    } else if (char === inQuote) {
-      inQuote = null;
-    } else if (/\s/.test(char) && inQuote === null) {
-      if (current !== "") {
-        args.push(current);
-        current = "";
-      }
-    } else {
-      current += char;
-    }
+function cat(args: string[]): void {
+  try {
+    exec.execSync(`cat ${args.map(a => `'${a}'`).join(" ")}`, {
+      stdio: "inherit",
+    });
+  } catch (err) {
+    console.error("cat: error executing command");
   }
-
-  if (current !== "") args.push(current);
-  return args;
 }
 
 function stepRun() {
@@ -67,7 +52,7 @@ function stepRun() {
       const [command, ...args] = tokens;
       if (equalsIgnoreCase(command, "exit")) {
         exit(args[0]);
-      } else if (equalsIgnoreCase(command , "echo")) {
+      } else if (equalsIgnoreCase(command, "echo")) {
         echo(args);
       } else if (equalsIgnoreCase(command, "type")) {
         type(args[0]);
@@ -77,6 +62,8 @@ function stepRun() {
         exec.execSync(command, { stdio: "inherit" });
       } else if (equalsIgnoreCase(command, "cd")) {
         checkRouteExists(args[0]);
+      } else if (equalsIgnoreCase(command, "cat")) {
+        cat(args);
       } else {
         console.log(`${command}: command not found`);
       }
