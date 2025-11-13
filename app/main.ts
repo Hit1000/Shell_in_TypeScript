@@ -5,13 +5,14 @@ import {
   checkRouteExists,
   parseCommand,
 } from "./utils.js";
-import exec from "child_process";
+import {exec, execFileSync } from "child_process";
 
 const rl = createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-const types = ["echo", "exit", "type", "pwd", "cd"];
+
+const types = ["echo", "exit", "type", "pwd", "cd", "cat"];
 
 function exit(command: string): void {
   process.exit(parseInt(command, 10));
@@ -34,9 +35,7 @@ function type(filename: string): void {
 
 function cat(args: string[]): void {
   try {
-    exec.execSync(`cat ${args.map(a => `'${a}'`).join(" ")}`, {
-      stdio: "inherit",
-    });
+    execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
     console.error("cat: error executing command");
   }
