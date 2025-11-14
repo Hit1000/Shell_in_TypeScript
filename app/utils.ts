@@ -37,9 +37,9 @@ export function parseCommand(command: string): string[] {
   for (let i = 0; i < command.length; i++) {
     const char = command[i];
 
-    if (char === "'" && !inSingleQuote) {
+    if ((char === "'" || char === '"') && !inSingleQuote) {
       inSingleQuote = true; // start single-quoted literal
-    } else if (char === "'" && inSingleQuote) {
+    } else if ((char === "'" || char === '"') && inSingleQuote) {
       inSingleQuote = false; // end single-quoted literal
     } else if (/\s/.test(char) && !inSingleQuote) {
       // split on spaces only if we're not inside quotes
