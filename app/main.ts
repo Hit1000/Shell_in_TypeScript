@@ -12,7 +12,7 @@ const rl = createInterface({
   output: process.stdout,
 });
 
-const types = ["echo", "exit", "type", "pwd", "cd", "cat"];
+const types = ["echo", "exit", "type", "pwd", "cd"];
 
 function exit(command: string): void {
   process.exit(parseInt(command, 10));
