@@ -57,12 +57,12 @@ function stepRun() {
         type(args[0]);
       } else if (equalsIgnoreCase(command, "pwd")) {
         console.log(process.cwd());
-      } else if ((execPath = findExecutableInPath(command))) {
-        execSync(`${command} ${args.join(" ")}`, { stdio: "inherit" });
-      } else if (equalsIgnoreCase(command, "cd")) {
-        checkRouteExists(args[0]);
       } else if (equalsIgnoreCase(command, "cat")) {
         cat(args);
+      } else if (equalsIgnoreCase(command, "cd")) {
+        checkRouteExists(args[0]);
+      } else if ((execPath = findExecutableInPath(command))) {
+        execSync(`${command} ${args.join(" ")}`, { stdio: "inherit" });
       } else {
         console.log(`${command}: command not found`);
       }
