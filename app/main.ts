@@ -34,7 +34,10 @@ function type(filename: string): void {
 }
 
 function cat(args: string[]): void {
-  console.log("this is cat function >>> "+ args +"\ndone\n");
+  console.log("this is cat function >>> ");
+  for (let i = 0; i < args.length; i++) {
+  console.log(args[i]);
+}
   try {
     execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
