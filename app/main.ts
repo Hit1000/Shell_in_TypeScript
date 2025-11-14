@@ -38,6 +38,7 @@ function cat(args: string[]): void {
   for (let i = 0; i < args.length; i++) {
   console.log(args[i]);
 }
+args = args.map(arg => arg.replace(/"   "/g, '/'));
   try {
     execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
