@@ -34,11 +34,7 @@ function type(filename: string): void {
 }
 
 function cat(args: string[]): void {
-  console.log("this is cat function >>> ");
-  for (let i = 0; i < args.length; i++) {
-  console.log(args[i]);
-}
-args = args.map(arg => arg.replace(/"   "/g, '/'));
+  args = args.map(arg => arg.replace(/"   "/g, '/'));
   try {
     execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
