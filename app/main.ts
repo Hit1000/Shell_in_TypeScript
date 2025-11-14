@@ -34,8 +34,9 @@ function type(filename: string): void {
 }
 
 function cat(args: string[]): void {
+  console.log("this is cat function >>> "+ args +"\ndone\n");
   try {
-    execFileSync("cat", ["/tmp/bee/f/3", "/tmp/bee/f/15"], { stdio: "inherit" });
+    execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
     console.error("cat: error executing command");
   }
