@@ -5,7 +5,7 @@ import {
   checkRouteExists,
   parseCommand,
 } from "./utils.js";
-import {exec, execFileSync, execSync  } from "child_process";
+import { exec, execFileSync, execSync } from "child_process";
 
 const rl = createInterface({
   input: process.stdin,
@@ -34,11 +34,23 @@ function type(filename: string): void {
 }
 
 function cat(args: string[]): void {
-  args = args.map(arg => arg.replace(/"   "/g, '/'));
+  args = args.map((arg) => arg.replace(/"   "/g, "/"));
   try {
     execFileSync("cat", args, { stdio: "inherit" });
   } catch (err) {
     console.error("cat: error executing command");
+  }
+}
+
+function findExecutable(
+  args: string[],
+  execPath: string,
+  command: string
+): void {
+  try {
+    execFileSync(execPath, args, { stdio: "inherit", argv0: command } as any);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
   }
 }
 
@@ -63,12 +75,7 @@ function stepRun() {
       } else if (equalsIgnoreCase(command, "cd")) {
         checkRouteExists(args[0]);
       } else if ((execPath = findExecutableInPath(command))) {
-        try {
-          execFileSync(execPath, args, { stdio: "inherit" });
-        } catch (err) {
-          // preserve previous behavior of showing an error when execution fails
-          console.error(err instanceof Error ? err.message : err);
-        }
+        findExecutable(args, execPath, command);
       } else {
         console.log(`${command}: command not found`);
       }
