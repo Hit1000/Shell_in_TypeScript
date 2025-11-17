@@ -37,7 +37,6 @@ export function parseCommand(command: string): string[] {
 
   for (let i = 0; i < command.length; i++) {
     const char = command[i];
-
     if (char === "'" && !inDoubleQuote) {
       // toggle single-quote state when not inside double quotes
       inSingleQuote = !inSingleQuote;
@@ -48,6 +47,20 @@ export function parseCommand(command: string): string[] {
       // toggle double-quote state when not inside single quotes
       inDoubleQuote = !inDoubleQuote;
       continue;
+    }
+
+    // Backslash escapes are only honored when NOT inside single or double quotes
+    if (char === "\\" && !inSingleQuote && !inDoubleQuote) {
+      // If there's a next character, append it literally (escape)
+      if (i + 1 < command.length) {
+        i += 1;
+        current += command[i];
+        continue;
+      } else {
+        // Trailing backslash - treat it as a literal backslash
+        current += "\\";
+        continue;
+      }
     }
 
     if (/\s/.test(char) && !inSingleQuote && !inDoubleQuote) {
