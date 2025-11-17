@@ -62,7 +62,6 @@ export function parseCommand(command: string): string[] {
         continue;
       }
     }
-
     if (/\s/.test(char) && !inSingleQuote && !inDoubleQuote) {
       // split on whitespace only when not inside any quotes
       if (current !== "") {
