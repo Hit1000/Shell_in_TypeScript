@@ -30,26 +30,36 @@ export function checkRouteExists(route: string): void {
 }
 
 export function parseCommand(command: string): string[] {
-  const args = [];
+  const args: string[] = [];
   let current = "";
   let inSingleQuote = false;
+  let inDoubleQuote = false;
 
   for (let i = 0; i < command.length; i++) {
     const char = command[i];
 
-    if ((char === "'" || char === '"') && !inSingleQuote) {
-      inSingleQuote = true; // start single-quoted literal
-    } else if ((char === "'" || char === '"') && inSingleQuote) {
-      inSingleQuote = false; // end single-quoted literal
-    } else if (/\s/.test(char) && !inSingleQuote) {
-      // split on spaces only if we're not inside quotes
+    if (char === "'" && !inDoubleQuote) {
+      // toggle single-quote state when not inside double quotes
+      inSingleQuote = !inSingleQuote;
+      continue;
+    }
+
+    if (char === '"' && !inSingleQuote) {
+      // toggle double-quote state when not inside single quotes
+      inDoubleQuote = !inDoubleQuote;
+      continue;
+    }
+
+    if (/\s/.test(char) && !inSingleQuote && !inDoubleQuote) {
+      // split on whitespace only when not inside any quotes
       if (current !== "") {
         args.push(current);
         current = "";
       }
-    } else {
-      current += char;
+      continue;
     }
+
+    current += char;
   }
 
   if (current !== "") args.push(current);
