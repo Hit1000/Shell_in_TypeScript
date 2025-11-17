@@ -49,15 +49,43 @@ export function parseCommand(command: string): string[] {
       continue;
     }
 
-    // Backslash escapes are only honored when NOT inside single or double quotes
-    if (char === "\\" && !inSingleQuote && !inDoubleQuote) {
-      // If there's a next character, append it literally (escape)
+    // Backslash handling:
+    // - Inside single quotes: backslash is literal (no special handling)
+    // - Inside double quotes: backslash escapes only: ", \\, $, `, or newline
+    // - Outside any quotes: backslash escapes the next character literally
+    if (char === "\\" && !inSingleQuote) {
+      // inside double quotes: only a few characters are escaped
+      if (inDoubleQuote) {
+        if (i + 1 < command.length) {
+          const next = command[i + 1];
+          if (next === '"' || next === '\\' || next === '$' || next === '`' || next === '\n') {
+            // consume the escaped character and append it (or drop it for backslash+newline)
+            i += 1;
+            if (next === '\n') {
+              // backslash-newline: line continuation, remove both (append nothing)
+            } else {
+              current += next;
+            }
+            continue;
+          } else {
+            // backslash before other chars inside double quotes stays literal
+            current += "\\";
+            continue;
+          }
+        } else {
+          // trailing backslash inside double quotes -> literal backslash
+          current += "\\";
+          continue;
+        }
+      }
+
+      // outside quotes: escape next character literally (including spaces)
       if (i + 1 < command.length) {
         i += 1;
         current += command[i];
         continue;
       } else {
-        // Trailing backslash - treat it as a literal backslash
+        // trailing backslash -> literal
         current += "\\";
         continue;
       }
