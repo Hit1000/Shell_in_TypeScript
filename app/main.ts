@@ -63,7 +63,12 @@ function stepRun() {
       } else if (equalsIgnoreCase(command, "cd")) {
         checkRouteExists(args[0]);
       } else if ((execPath = findExecutableInPath(command))) {
-        execSync(`${command} ${args.join(" ")}`, { stdio: "inherit" });
+        try {
+          execFileSync(execPath, args, { stdio: "inherit" });
+        } catch (err) {
+          // preserve previous behavior of showing an error when execution fails
+          console.error(err instanceof Error ? err.message : err);
+        }
       } else {
         console.log(`${command}: command not found`);
       }
